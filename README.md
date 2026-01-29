@@ -112,6 +112,7 @@ Answer with Sources
 real-estate-tool/
 ├── main.py                 # Streamlit web application
 ├── rag.py                  # RAG implementation with LCEL chains
+├── prompt.py               # Customized prompt templates for RAG
 ├── requirements.txt        # Python dependencies
 ├── .env                    # Environment variables (create this)
 ├── resources/
@@ -121,6 +122,41 @@ real-estate-tool/
 ```
 
 ## 🔧 Configuration
+
+### Custom Prompt Templates (prompt.py)
+
+The application uses customized prompt templates to guide the LLM behavior:
+
+**PROMPT** - Main QA template:
+```python
+PROMPT = PromptTemplate(
+    template="""You are a helpful real estate assistant. Use the provided context to answer questions accurately.
+If the answer is not in the context, say "I don't have information about that in the provided documents."
+
+Context:
+{summaries}
+
+Question: {question}
+
+Answer:""",
+    input_variables=["summaries", "question"],
+)
+```
+
+**EXAMPLE_PROMPT** - Document formatting template:
+```python
+EXAMPLE_PROMPT = PromptTemplate(
+    template="Content: {page_content}\nSource: {source}",
+    input_variables=["page_content", "source"],
+)
+```
+
+These custom prompts ensure:
+- Domain-specific behavior (real estate assistant)
+- Accurate context usage (answers only from provided documents)
+- Responsible AI (admits when information is missing)
+
+### Other Configuration
 
 Key constants in `rag.py`:
 
@@ -134,10 +170,11 @@ COLLECTION_NAME = "real_estate"
 ## 🎯 How It Works
 
 1. **LCEL Chain Construction**: The app uses LangChain's modern LCEL syntax to build composable chains
-2. **Retrieval**: Documents are retrieved based on semantic similarity to the query
-3. **Prompt Engineering**: Retrieved context is formatted with the query into a structured prompt
-4. **LLM Generation**: Llama 3.3 70B generates contextual answers
-5. **Source Tracking**: Unique sources are extracted and displayed
+2. **Custom Prompts**: Leverages `prompt.py` templates to customize LLM behavior for real estate domain
+3. **Retrieval**: Documents are retrieved based on semantic similarity to the query
+4. **Prompt Engineering**: Retrieved context is formatted with the query using custom prompt templates
+5. **LLM Generation**: Llama 3.3 70B generates contextual answers with domain-aware instructions
+6. **Source Tracking**: Unique sources are extracted and displayed
 
 ## 🔐 API Usage
 
