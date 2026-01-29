@@ -9,6 +9,7 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from prompt import PROMPT, EXAMPLE_PROMPT
 
 load_dotenv()
 
@@ -76,12 +77,12 @@ def generate_answer(query):
 
     retriever = vector_store.as_retriever()
 
+    # Use the custom prompt template from prompt.py
     prompt = ChatPromptTemplate.from_template(
-        """Answer the following question based only on the provided context:
+        """You are a helpful real estate assistant. Use the provided context to answer questions accurately.
+If the answer is not in the context, say "I don't have information about that in the provided documents."
 
-<context>
 {context}
-</context>
 
 Question: {question}
 """
